@@ -5,27 +5,26 @@ import axios from 'axios';
 const { LOGIN, LOGOUT, SESSION } = API_ENDPOINT;
 
 const initialState = {
-  user: null,
+  admin: null,
   isError: false,
   isSuccess: false,
   isLoading: false,
   message: ''
 };
 
-export const loginUser = createAsyncThunk('user/loginUser', async(user, thunkAPI) => {
-  try {
-    const response = await axios.post(LOGIN, {
-      email: user.email,
-      password: user.password
-    });
-    return response.data;
-  } catch (error) {
-    if (error.response) {
-      const message = error.response.data.message;
-      return thunkAPI.rejectWithValue(message);
+export const loginAdmin = createAsyncThunk(
+  "admin/loginadmin",
+  async ({ email, password }) => {
+    const response = await axios.post(LOGIN({ email, password }));
+
+    if (response.status === "error") {
+      return { error: true, status: response.status };
+    }
+    if (response.status !== "error") {
+      return { error: false, token: response.token, status: "" };
     }
   }
-});
+);
 
 export const sessionUser = createAsyncThunk('user/session', async(_, thunkAPI) => {
   try {
@@ -50,15 +49,15 @@ export const authSlice = createSlice({
     reset: (state) => initialState
   },
   extraReducers:(builder) => {
-    builder.addCase(loginUser.pending, (state) => {
+    builder.addCase(loginAdmin.pending, (state) => {
       state.isLoading = true;
     });
-    builder.addCase(loginUser.fulfilled, (state, action) => {
+    builder.addCase(loginAdmin.fulfilled, (state, action) => {
       state.isLoading = false;
       state.isSuccess = true;
-      state.user = action.payload;
+      state.admin = action.payload;
     });
-    builder.addCase(loginUser.rejected, (state, action) => {
+    builder.addCase(loginAdmin.rejected, (state, action) => {
       state.isLoading = false;
       state.isError = true;
       state.message = action.payload;

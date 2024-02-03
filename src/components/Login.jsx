@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { loginUser, reset } from '../features/auth';
+import { loginAdmin, reset } from '../features/auth';
 import Logo from '../public/images/UMKM-Merdeka-Brands.png';
 import Spinner from './Spinner';
 import Alert from './Alert';
@@ -11,20 +11,20 @@ const Login = () => {
   const [ password, setPassword ] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { user, isError, isSuccess, isLoading, message } = useSelector(
+  const { admin, isError, isSuccess, isLoading, message } = useSelector(
     (state) => state.auth
   );
 
   useEffect(() => {
-    if (user || isSuccess) {
+    if (admin || isSuccess) {
       navigate('/dashboard');
     }
     dispatch(reset());
-  }, [user, isSuccess, dispatch, navigate]);
+  }, [admin, isSuccess, dispatch, navigate]);
 
   const Auth = (e) => {
     e.preventDefault();
-    dispatch(loginUser({ email, password }));
+    dispatch(loginAdmin({ email, password }));
   };
 
   return (
